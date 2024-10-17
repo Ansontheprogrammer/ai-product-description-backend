@@ -7,15 +7,15 @@ export const server = restify.createServer({
 
 const portNumber = process.env.PORT || 8100;
 /// HANDLE CORS ISSUE
-server.use(restify.plugins.fullResponse());
-server.use(restify.plugins.bodyParser({ mapParams: true }));
-server.use(restify.plugins.queryParser({ mapParams: true }));
 server.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   res.header("Access-Control-Allow-Methods", "*");
   return next();
 });
+server.use(restify.plugins.fullResponse());
+server.use(restify.plugins.bodyParser({ mapParams: true }));
+server.use(restify.plugins.queryParser({ mapParams: true }));
 
 server.get("/api/v1/ping", (req, res, next) => {
   res.send(200, "ping");
