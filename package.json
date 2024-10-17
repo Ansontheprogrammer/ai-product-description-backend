@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "engines": {
-    "node": "15.4.0"
+    "node": ">=15.4.0"
   },
   "cacheDirectories": [
     "node_modules"
@@ -25,7 +25,9 @@
   "dependencies": {
     "axios": "^0.21.1",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.4.5",
+    "mongodb": "^6.9.0",
+    "mongoose": "^8.7.2",
     "openai": "^3.2.1",
     "restify": "^11.0.0",
     "restify-errors": "^8.0.2",
