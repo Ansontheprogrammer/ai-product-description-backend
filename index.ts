@@ -1,9 +1,19 @@
+require('dotenv').config()
 import restify from "restify";
 import router from "./lib/router";
+import mongoose from "mongoose";
 
 export const server = restify.createServer({
   handleUncaughtExceptions: true,
 });
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI!)
+  .then(() => {
+    console.log('MongoDB connected...');
+  }).catch(err => {
+    console.error('Error connecting to MongoDB:', err);
+  });
 
 const portNumber = process.env.PORT || 8100;
 /// HANDLE CORS ISSUE
