@@ -17,6 +17,7 @@ export const createDescription = async (descriptionId, userId, description, prod
   }
 }
 
+
 export const getRecentProductDescriptions = async (productId) => {
   try {
     const descriptions = await Description.find({ productId })
@@ -27,3 +28,4 @@ export const getRecentProductDescriptions = async (productId) => {
     throw new Error('Error fetching recent product descriptions: ' + error.message);
   }
 };
+

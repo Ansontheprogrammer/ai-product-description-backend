@@ -10,6 +10,7 @@ const descriptionSchema = new Schema({
   createdAt: { type: String, required: true }
 });
 
+
 // Create an index on createdAt for faster sorting
 descriptionSchema.index({ createdAt: -1 });
 
