@@ -1,4 +1,4 @@
-import { createDescription } from "../../services/description-service";
+import { createDescription, getRecentProductDescriptions } from "../../services/description-service";
 import {findOrCreateUser } from "../../services/user-service";
 import { aiApps } from "../ai_model/ai_apps";
 import OpenAI from "../ai_model/open_ai";
@@ -123,3 +123,18 @@ export async function createAndDownloadAIVideo(req, res, next) {
     return next(error);
   }
 }
+
+export const getRecentDescriptions = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    if (!productId) {
+      return res.status(400).json({ error: 'Product ID is required' });
+    }
+
+    const descriptions = await getRecentProductDescriptions(productId);
+    return res.json(descriptions);
+  } catch (error) {
+    console.error('Error fetching recent descriptions:', error.message);
+    return res.status(500).json({ error: error.message });
+  }
+};

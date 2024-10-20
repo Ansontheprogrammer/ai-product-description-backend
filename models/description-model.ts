@@ -10,5 +10,8 @@ const descriptionSchema = new Schema({
   createdAt: { type: String, required: true }
 });
 
+// Create an index on createdAt for faster sorting
+descriptionSchema.index({ createdAt: -1 });
+
 // Create the models
 export const Description = mongoose.model('Description', descriptionSchema);

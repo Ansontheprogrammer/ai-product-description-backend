@@ -5,6 +5,7 @@ import {
   getAIChatResponse,
   getAIImages,
   getAIPromptResponse,
+  getRecentDescriptions,
 } from "../controllers/ai_controller";
 
 export const aiRouter = new Router();
@@ -50,3 +51,11 @@ aiRouter.post("/api/v1/ai/video", createAndDownloadAIVideo);
  *
  */
 aiRouter.get("/api/v1/ai/apps", getAIApps);
+
+/**
+ * @api GET /api/v1/ai/recent-descriptions
+ *
+ * Get Recent Descriptions
+ *
+ */
+aiRouter.get("/api/v1/ai/recent-descriptions/:productId", getRecentDescriptions);
