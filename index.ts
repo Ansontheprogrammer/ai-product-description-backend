@@ -1,4 +1,4 @@
-require('dotenv').config()
+require("dotenv").config();
 import restify from "restify";
 import router from "./lib/router";
 import mongoose from "mongoose";
@@ -7,12 +7,24 @@ export const server = restify.createServer({
   handleUncaughtExceptions: true,
 });
 
+const corsMiddleware = require("restify-cors-middleware2");
+
+const cors = corsMiddleware({
+  preflightMaxAge: 5, //Optional
+  origins: ["*"],
+});
+
+server.pre(cors.preflight);
+server.use(cors.actual);
+
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI!)
+mongoose
+  .connect(process.env.MONGODB_URI!)
   .then(() => {
-    console.log('MongoDB connected...');
-  }).catch(err => {
-    console.error('Error connecting to MongoDB:', err);
+    console.log("MongoDB connected...");
+  })
+  .catch((err) => {
+    console.error("Error connecting to MongoDB:", err);
   });
 
 const portNumber = process.env.PORT || 8100;
@@ -23,6 +35,7 @@ server.use((req, res, next) => {
   res.header("Access-Control-Allow-Methods", "*");
   return next();
 });
+
 server.use(restify.plugins.fullResponse());
 server.use(restify.plugins.bodyParser({ mapParams: true }));
 server.use(restify.plugins.queryParser({ mapParams: true }));
