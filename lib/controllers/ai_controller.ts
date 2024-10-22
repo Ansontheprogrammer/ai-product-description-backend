@@ -1,5 +1,5 @@
 import { createDescription } from "../../services/description-service";
-import {findOrCreateUser } from "../../services/user-service";
+import { findOrCreateUser } from "../../services/user-service";
 import { aiApps } from "../ai_model/ai_apps";
 import OpenAI from "../ai_model/open_ai";
 import synthesia from "../ai_model/synthesia";
@@ -35,7 +35,15 @@ export async function getAIImages(req, res, next) {
  * @param {Function} next - The next middleware function.
  */
 export async function getAIPromptResponse(req, res, next) {
-  const {userId, storeId, descriptionId, description, productId, promptSettings, prompt} = req.body;
+  const {
+    userId,
+    storeId,
+    descriptionId,
+    description,
+    productId,
+    promptSettings,
+    prompt,
+  } = req.body;
   try {
     /// Shopify app sends form data that needs parsing
     if (typeof req.body === "string") {
@@ -44,16 +52,14 @@ export async function getAIPromptResponse(req, res, next) {
     let type = req.body.type || "standard";
     let aiResponse = "";
     if (type === "product_description") {
-      aiResponse = await OpenAI.generateProductDescription(
-        promptSettings
-      );
+      aiResponse = await OpenAI.generateProductDescription(promptSettings);
     } else {
       aiResponse = await OpenAI.generateAIResponse(prompt);
     }
 
     // check if the user already exists
-    await findOrCreateUser(userId, storeId)
-    await createDescription(descriptionId, userId, description, productId)
+    // await findOrCreateUser(userId, storeId)
+    // await createDescrsiption(descriptionId, userId, description, productId)
 
     return res.json(aiResponse);
   } catch (err) {
