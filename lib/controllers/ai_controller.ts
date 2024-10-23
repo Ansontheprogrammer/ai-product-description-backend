@@ -126,7 +126,7 @@ export async function createAndDownloadAIVideo(req, res, next) {
   }
 }
 
-export const getRecentDescriptions = async (req, res) => {
+export const getRecentDescriptions = async (req, res, next) => {
   try {
     const { productId } = req.params;
     if (!productId) {
