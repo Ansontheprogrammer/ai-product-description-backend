@@ -1,5 +1,8 @@
 import { createDescription } from "../../services/description-service";
-import { findOrCreateUser } from "../../services/user-service";
+import {
+  deleteUserAndDescriptions,
+  findOrCreateUser,
+} from "../../services/user-service";
 import { aiApps } from "../ai_model/ai_apps";
 import OpenAI from "../ai_model/open_ai";
 import synthesia from "../ai_model/synthesia";
@@ -127,5 +130,29 @@ export async function createAndDownloadAIVideo(req, res, next) {
     return res.sendFile(path.resolve(outputFilename));
   } catch (error) {
     return next(error);
+  }
+}
+
+export async function deleteAccount(req, res, next) {
+  try {
+    const { userId } = req.params;
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const result = await deleteUserAndDescriptions(userId);
+
+    if (!result) {
+      return res
+        .status(404)
+        .json({ message: `User not found against userId: ${userId}!!` });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "User and descriptions deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user and descriptions:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 }
