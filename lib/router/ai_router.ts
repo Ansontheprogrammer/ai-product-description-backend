@@ -1,6 +1,7 @@
 import { Router } from "restify-router";
 import {
   createAndDownloadAIVideo,
+  deleteAccount,
   getAIApps,
   getAIChatResponse,
   getAIImages,
@@ -50,3 +51,11 @@ aiRouter.post("/api/v1/ai/video", createAndDownloadAIVideo);
  *
  */
 aiRouter.get("/api/v1/ai/apps", getAIApps);
+
+/**
+ * @api DELETE /api/v1/ai/user/:userId
+ *
+ * Delete Account
+ *
+ */
+aiRouter.del("/api/v1/ai/user/:userId", deleteAccount);
