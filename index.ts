@@ -1,51 +1,46 @@
-require("dotenv").config();
 import restify from "restify";
+import corsMiddleware from "restify-cors-middleware2";
 import router from "./lib/router";
-import mongoose from "mongoose";
+require("dotenv").config();
+import bunyan from "bunyan";
+
+const log = bunyan.createLogger({
+  name: "restify",
+  level: "fatal", // change to "error" or "fatal" to suppress warnings
+  serializers: bunyan.stdSerializers, // prevents dumping huge objects
+});
 
 export const server = restify.createServer({
   handleUncaughtExceptions: true,
+  log, // <— prevents restify from attaching a Bunyan logger
 });
 
-const corsMiddleware = require("restify-cors-middleware2");
-
+// Configure CORS
 const cors = corsMiddleware({
-  preflightMaxAge: 5, //Optional
-  origins: ["*"],
+  preflightMaxAge: 5, // optional
+  origins: ["*"], // allow all origins, or restrict to your frontend
+  allowHeaders: ["Authorization", "Content-Type", "X-Requested-With"],
+  exposeHeaders: ["Authorization"],
 });
 
+// Must come **before** other middleware
 server.pre(cors.preflight);
 server.use(cors.actual);
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGODB_URI!)
-  .then(() => {
-    console.log("MongoDB connected...");
-  })
-  .catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-
-const portNumber = process.env.PORT || 8100;
-/// HANDLE CORS ISSUE
-server.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  res.header("Access-Control-Allow-Methods", "*");
-  return next();
-});
-
+// Other middlewares
 server.use(restify.plugins.fullResponse());
 server.use(restify.plugins.bodyParser({ mapParams: true }));
 server.use(restify.plugins.queryParser({ mapParams: true }));
 
+// Routes
 server.get("/api/v1/ping", (req, res, next) => {
   res.send(200, "ping");
 });
 
 router.ai.applyRoutes(server);
 router.shopify.applyRoutes(server);
+
+const portNumber = process.env.PORT || 8100;
 server.listen(portNumber, function () {
   console.log("%s listening at %s", server.name, server.url);
 });
