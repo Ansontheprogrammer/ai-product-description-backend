@@ -22,7 +22,9 @@ cd hey-ally-shopify-backend
 
 ### 2. Install dependencies
 
+```
 npm install
+```
 
 ### 3. Environment setup
 
@@ -30,35 +32,43 @@ Create a .env file in the root with the following values:
 
 # OpenAI
 
+```
 OPENAI_API_KEY=your_openai_key
+```
 
 # Firebase
 
+```
 FIREBASE_API_KEY=your_firebase_key
 FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
 FIREBASE_PROJECT_ID=your_project_id
 FIREBASE_STORAGE_BUCKET=your_project_bucket
 FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 FIREBASE_APP_ID=your_app_id
+```
 
 ### 🚀 Running the Backend
 
 # Development
 
+```
 npm run dev
+```
 
 # Production
 
-bash
+```
 npm run build
 npm start
+```
 
 # 🧪 Testing
 
 Run backend tests:
 
-bash
+```
 npm test
+```
 
 Tests cover:
 
