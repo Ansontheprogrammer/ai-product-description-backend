@@ -3,9 +3,8 @@ import dotenv from "dotenv";
 import { db } from "../db/client.server";
 import { addDoc, collection } from "@firebase/firestore";
 import OpenAIInterface from "../ai_model/open_ai";
-import { getDocs } from "firebase/firestore";
+import { getDocs, Timestamp } from "firebase/firestore";
 
-dotenv.config();
 // Create a concrete subclass for testing
 class TestOpenAI extends OpenAIInterface {
   public async runPrompt(settings: any) {
@@ -13,13 +12,18 @@ class TestOpenAI extends OpenAIInterface {
   }
 }
 const testInstance = new TestOpenAI();
+
 describe("System Checks", () => {
   it("should make sure Firestore is online", async () => {
-    const systemCollection = collection(db, "system-test");
-    await addDoc(systemCollection, {
-      online: "ping",
-      datetime: new Date(),
-    });
+    try {
+      const systemCollection = collection(db, "system-test");
+      await addDoc(systemCollection, {
+        online: "ping",
+        datetime: Timestamp.fromDate(new Date()),
+      });
+    } catch (error) {
+      throw error;
+    }
   });
 
   it("should make sure 'descriptions' collections exist", async () => {

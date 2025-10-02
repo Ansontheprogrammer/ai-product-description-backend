@@ -1,8 +1,11 @@
 import restify from "restify";
 import corsMiddleware from "restify-cors-middleware2";
 import router from "./lib/router";
-require("dotenv").config();
 import bunyan from "bunyan";
+import * as dotenv from "dotenv";
+
+/// Load enviroment variables.
+dotenv.config();
 
 const log = bunyan.createLogger({
   name: "restify",
