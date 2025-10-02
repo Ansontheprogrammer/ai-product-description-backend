@@ -1,4 +1,4 @@
-import OpenAI from "../ai_model/open_ai";
+import { description_model } from "../db/descriptions";
 
 /**
  * Get an AI response to a given prompt or question.
@@ -18,7 +18,7 @@ export async function getAIPromptResponse(req, res, next) {
       req.body = JSON.parse(req.body);
     }
     let aiResponse = "";
-    aiResponse = await OpenAI.generateProductDescription(
+    aiResponse = await description_model.getProductDescription(
       promptSettings,
       shopifyStoreID
     );
