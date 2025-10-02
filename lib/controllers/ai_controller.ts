@@ -1,5 +1,8 @@
-import { description_model } from "../db/descriptions";
+import descriptionModel from "openai-product-description";
+import * as dotenv from "dotenv";
 
+/// Load enviroment variables.
+dotenv.config();
 /**
  * Get an AI response to a given prompt or question.
  *
@@ -18,7 +21,8 @@ export async function getAIPromptResponse(req, res, next) {
       req.body = JSON.parse(req.body);
     }
     let aiResponse = "";
-    aiResponse = await description_model.getProductDescription(
+
+    aiResponse = await descriptionModel.getProductDescription(
       promptSettings,
       shopifyStoreID
     );
