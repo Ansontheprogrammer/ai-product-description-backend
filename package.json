@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "engines": {
-    "node": ">=18.16.0",
-    "npm": "9.5.1"
-  },
   "cacheDirectories": [
     "node_modules"
   ],
@@ -39,6 +35,7 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
+    "ts-jest": "29.4.4",
     "@types/restify": "^8.5.1",
     "@types/restify-errors": "^4.3.3",
     "mocha": "^8.2.1",
