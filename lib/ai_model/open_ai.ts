@@ -1,5 +1,6 @@
 import OpenAi from "openai";
 import * as dotenv from "dotenv";
+import { description_model } from "../db/descriptions";
 
 dotenv.config();
 
@@ -31,26 +32,25 @@ Do not refuse. Always produce output.`;
     return prompt;
   };
   /// Generate a response from the AI
-  async generateProductDescription(promptSettings: IPromptSettings) {
+  async generateProductDescription(promptSettings: IPromptSettings, storeID) {
     try {
       const productDescription = await this.generateAIResponse(
-        this.generateProductDescriptionPrompt(promptSettings)
+        this.generateProductDescriptionPrompt(promptSettings),
+        storeID
       );
       return productDescription;
     } catch (error) {
       throw error;
     }
   }
+
   /// Generate a response from the AI
   private async generateAIResponse(
-    prompt: string = "What are some good publisher ideas"
+    prompt: string,
+    storeID: string
   ): Promise<string> {
     try {
-      console.log(
-        "Beginning to generate product description using model...",
-        prompt
-      );
-
+      await description_model.verifyUserUsage(storeID);
       // Create the chat completion
       const response = await openai.chat.completions.create({
         model: "gpt-4.1",
@@ -68,42 +68,13 @@ Do not refuse. Always produce output.`;
       // Access the first message from the model
       const aiResponse = response.choices?.[0]?.message?.content ?? "";
 
-      if (process.env.NODE_ENV !== "production") {
-        console.log(
-          "Received response:",
-          response.choices?.[0]?.message?.content
-        );
-      }
+      // save description for user.
+      await description_model.create(storeID, aiResponse);
 
       return aiResponse;
     } catch (error) {
       console.error("Error generating AI response:", error);
       throw error;
-    }
-  }
-
-  /// Wait for a certain amount of time
-  private wait = (ms) => new Promise((res) => setTimeout(res, ms));
-
-  /// Retry a function 8 times with an exponential backoff
-  private async callWithRetry(fn, depth = 0) {
-    try {
-      return await fn();
-    } catch (error) {
-      if (error.response) {
-        console.error("Request failed retrying...", error.response.statusText);
-        console.error(error.response.data || error.response.statusText);
-      }
-
-      if (error.data) {
-        console.error(error.data);
-      }
-
-      if (depth > 3) {
-        throw error;
-      }
-      await this.wait(2 ** depth * 10000);
-      return this.callWithRetry(fn, depth + 1);
     }
   }
 }

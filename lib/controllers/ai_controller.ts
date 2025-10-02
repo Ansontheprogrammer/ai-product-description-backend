@@ -11,26 +11,28 @@ import OpenAI from "../ai_model/open_ai";
  * @param {Function} next - The next middleware function.
  */
 export async function getAIPromptResponse(req, res, next) {
-  const {
-    userId,
-    storeId,
-    descriptionId,
-    description,
-    productId,
-    promptSettings,
-    prompt,
-  } = req.body;
+  const { shopifyStoreID, promptSettings } = req.body;
   try {
     /// Shopify app sends form data that needs parsing
     if (typeof req.body === "string") {
       req.body = JSON.parse(req.body);
     }
     let aiResponse = "";
-    aiResponse = await OpenAI.generateProductDescription(promptSettings);
+    aiResponse = await OpenAI.generateProductDescription(
+      promptSettings,
+      shopifyStoreID
+    );
 
     return res.json(aiResponse);
   } catch (err) {
-    console.error(err, "ERROR WITH GENERATING PROMPT");
-    return next(err);
+    const error = err as Error;
+    if (error.message === "USAGE_LIMIT_REACHED") {
+      return res.send(429, {
+        code: "USAGE_LIMIT_REACHED",
+        message: "Daily limit reached.",
+      });
+    }
+
+    return next();
   }
 }
