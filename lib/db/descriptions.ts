@@ -58,11 +58,6 @@ class DescriptionModel extends OpenAIInterface {
     }
   }
 
-  public async get(shopifyStoreID: string) {
-    const snapshot = await getDocs(descriptionsCollection);
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  }
-
   public async getByStoreID(shopifyStoreID: string) {
     const q = query(
       descriptionsCollection,

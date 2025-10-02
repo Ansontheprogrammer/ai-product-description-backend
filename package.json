@@ -11,9 +11,9 @@
   ],
   "scripts": {
     "build": "tsc",
-    "build-test": "tsc && node ./dist/script/drop_tables.js",
     "heroku-postbuild": "npm run build",
-    "test": "export NODE_ENV=test && npm run build-test && npm run build && mocha --recursive dist/tests --exit",
+    "test": "NODE_ENV=test jest --passWithNoTests --runInBand",
+    "test:watch": "NODE_ENV=test jest --watch",
     "dev": "export NODE_ENV=dev && npm run build && nodemon ./index.ts ",
     "debug-wipe": "NODE_ENV=debug && npm run build-test  && npm run build && nodemon ./index.ts",
     "start": "NODE_ENV=production && ts-node ./dist/index.js",
@@ -27,6 +27,7 @@
     "bunyan": "^1.8.15",
     "dotenv": "^16.4.5",
     "firebase": "^12.3.0",
+    "jest": "^30.2.0",
     "openai": "^6.0.0",
     "restify": "^11.0.0",
     "restify-cors-middleware2": "^2.2.1",
@@ -36,18 +37,10 @@
     "typescript": "^4.6.3"
   },
   "devDependencies": {
-    "@types/chai": "^4.3.12",
-    "@types/mocha": "^8.0.3",
-    "@types/pg": "^8.6.0",
+    "@types/jest": "^30.0.0",
     "@types/restify": "^8.5.1",
     "@types/restify-errors": "^4.3.3",
-    "@types/supertest": "^2.0.10",
-    "chai": "^4.0.0",
     "mocha": "^8.2.1",
-    "nock": "^13.2.8",
-    "nodemon": "^2.0.22",
-    "sinon": "^9.2.2",
-    "supertest": "^4.0.2",
-    "typescript": "^4.6.3"
+    "nodemon": "^2.0.22"
   }
 }

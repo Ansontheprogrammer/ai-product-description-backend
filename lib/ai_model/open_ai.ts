@@ -1,10 +1,10 @@
-import OpenAi from "openai";
+import { OpenAI } from "openai";
+
 import * as dotenv from "dotenv";
-import { description_model } from "../db/descriptions";
 
 dotenv.config();
 
-const openai = new OpenAi({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
