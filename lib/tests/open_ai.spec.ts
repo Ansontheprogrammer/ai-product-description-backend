@@ -1,7 +1,7 @@
 import { addDoc, collection } from "@firebase/firestore";
 import { getDocs, Timestamp } from "firebase/firestore";
 import { db } from "../db/client.server";
-import descriptionModel from "openai-product-description";
+import descriptionModel from "ai-product-description";
 
 describe("System Checks", () => {
   it("should make sure Firestore is online", async () => {

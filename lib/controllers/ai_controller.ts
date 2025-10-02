@@ -1,4 +1,4 @@
-import descriptionModel from "openai-product-description";
+import descriptionModel from "ai-product-description";
 import * as dotenv from "dotenv";
 
 /// Load enviroment variables.

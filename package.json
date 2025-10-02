@@ -20,6 +20,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ai-product-description": "^1.0.0",
     "axios": "^0.21.1",
     "bunyan": "^1.8.15",
     "dotenv": "^16.4.5",
@@ -33,12 +34,12 @@
     "typescript": "^4.6.3"
   },
   "devDependencies": {
-    "jest": "^30.2.0",
     "@types/jest": "^30.0.0",
-    "ts-jest": "29.4.4",
     "@types/restify": "^8.5.1",
     "@types/restify-errors": "^4.3.3",
+    "jest": "^30.2.0",
     "mocha": "^8.2.1",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "ts-jest": "29.4.4"
   }
 }
