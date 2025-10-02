@@ -1,3 +1,4 @@
+import OpenAIInterface from "../ai_model/open_ai";
 import { db } from "./client.server";
 import {
   collection,
@@ -10,7 +11,7 @@ import {
 
 const descriptionsCollection = collection(db, "descriptions");
 
-class DescriptionModel {
+class DescriptionModel extends OpenAIInterface {
   public async create(shopifyStoreID: string, text: string) {
     return await addDoc(descriptionsCollection, {
       shopifyStoreID: shopifyStoreID,
@@ -74,6 +75,22 @@ class DescriptionModel {
       id: doc.id,
       ...doc.data(),
     }));
+  }
+
+  public async getProductDescription(settings, storeID) {
+    try {
+      // verify usage limits
+      await this.verifyUserUsage(storeID);
+      // get description from model.
+      const description = await this.generateAIResponse(settings);
+      // save description for user.
+      await this.create(storeID, description);
+
+      return description;
+    } catch (error) {
+      console.error("Error generating AI response:", error);
+      throw error;
+    }
   }
 }
 
