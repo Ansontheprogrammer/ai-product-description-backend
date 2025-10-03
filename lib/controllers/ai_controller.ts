@@ -1,8 +1,5 @@
-import descriptionModel from "ai-product-description";
-import * as dotenv from "dotenv";
+import { descriptionModel } from "../db/descriptions";
 
-/// Load enviroment variables.
-dotenv.config();
 /**
  * Get an AI response to a given prompt or question.
  *
@@ -21,10 +18,14 @@ export async function getAIPromptResponse(req, res, next) {
       req.body = JSON.parse(req.body);
     }
     let aiResponse = "";
+    let storeID = shopifyStoreID;
+    if (process.env.NODE_ENV === "test") {
+      storeID = "test-store-id";
+    }
 
     aiResponse = await descriptionModel.getProductDescription(
       promptSettings,
-      shopifyStoreID
+      storeID
     );
 
     return res.json(aiResponse);

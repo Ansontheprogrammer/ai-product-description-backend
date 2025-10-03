@@ -2,3 +2,4 @@
 /dist/
 .env
 package-lock.json
+/lib/firebase.cert.json

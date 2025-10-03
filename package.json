@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "20.x"
+  },
   "cacheDirectories": [
     "node_modules"
   ],
@@ -20,11 +23,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ai-product-description": "^1.0.0",
     "axios": "^0.21.1",
     "bunyan": "^1.8.15",
     "dotenv": "^16.4.5",
     "firebase": "^12.3.0",
+    "firebase-admin": "^13.5.0",
     "jest": "^30.2.0",
     "restify": "^11.0.0",
     "restify-cors-middleware2": "^2.2.1",
