@@ -1,4 +1,4 @@
-# Hey Ally – Shopify AI Descriptions (Backend)
+# AnsonErvin Inc. – AI-Product-Description (Backend)
 
 ## 📖 Description
 
