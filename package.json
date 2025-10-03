@@ -1,9 +1,9 @@
 {
-  "name": "heyalyson-api",
+  "name": "ai-product-description-service",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "author": "AnsonErvin Inc.",
+  "author": "",
   "engines": {
     "node": "20.x"
   },
@@ -21,9 +21,9 @@
     "tsc": "tsc",
     "postinstall": "npm run tsc"
   },
-  "author": "",
   "license": "ISC",
   "dependencies": {
+    "ai-product-description": "^1.0.2",
     "axios": "^0.21.1",
     "bunyan": "^1.8.15",
     "dotenv": "^16.4.5",
