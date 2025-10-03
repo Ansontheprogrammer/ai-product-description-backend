@@ -2,7 +2,7 @@
 
 ## 📖 Description
 
-This is the **backend service** for Hey Ally, an AI-powered Shopify assistant that generates unique product descriptions using **OpenAI GPT models**.
+This is the **backend service**created by AnsonErvin Inc., used to generate unique product descriptions using the models in the **ai-product-description** package.
 
 It provides a **REST API** (built with Restify) and uses **Firebase Firestore** for data persistence.  
 👉 This repo does **not include a frontend** — developers will need to connect their own client (e.g., Shopify App, Remix, React, or custom UI).
@@ -38,13 +38,8 @@ OPENAI_API_KEY=your_openai_key
 
 # Firebase
 
-```
-FIREBASE_API_KEY=your_firebase_key
-FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_STORAGE_BUCKET=your_project_bucket
-FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-FIREBASE_APP_ID=your_app_id
+Create a firebase.cert.json file in the lib directory with your Firebase service account credentials.
+
 ```
 
 ### 🚀 Running the Backend
@@ -52,14 +47,18 @@ FIREBASE_APP_ID=your_app_id
 # Development
 
 ```
+
 npm run dev
+
 ```
 
 # Production
 
 ```
+
 npm run build
 npm start
+
 ```
 
 # 🧪 Testing
@@ -67,7 +66,9 @@ npm start
 Run backend tests:
 
 ```
+
 npm test
+
 ```
 
 Tests cover:
@@ -87,3 +88,4 @@ Firestore storage for users & descriptions
 Custom prompt support for varied outputs
 
 Works with any frontend (React, Shopify App, Next.js, etc.)
+```
