@@ -1,12 +1,13 @@
+import { IPromptSettings } from "ai-product-description";
 import { db } from "./client.server";
 import productPredictionModel from "ai-product-description";
-
 export class DescriptionModel {
   private descriptionCollection = db.collection("descriptions");
-  public async create(shopifyStoreID: string, text: string) {
+  public async create(shopifyStoreID: string, text: string, productID: string) {
     return await this.descriptionCollection.add({
       shopifyStoreID: shopifyStoreID,
       text: text,
+      productID: productID,
       datetime: new Date(),
     });
   }
@@ -56,7 +57,10 @@ export class DescriptionModel {
     }));
   }
 
-  public async getProductDescription(settings, storeID) {
+  public async getAndStoreProductDescription(
+    settings: IPromptSettings,
+    storeID: string
+  ) {
     try {
       // verify usage limits
       await this.verifyUserUsage(storeID);
@@ -65,7 +69,7 @@ export class DescriptionModel {
       const description =
         await productPredictionModel.generateProductDescription(settings);
       // save description for user.
-      await this.create(storeID, description);
+      await this.create(storeID, description, settings.product.id.toString());
 
       return description;
     } catch (error) {

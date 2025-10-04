@@ -1,3 +1,4 @@
+import { IPromptSettings } from "ai-product-description";
 import { descriptionModel } from "../db/descriptions";
 
 /**
@@ -17,14 +18,13 @@ export async function getAIPromptResponse(req, res, next) {
     if (typeof req.body === "string") {
       req.body = JSON.parse(req.body);
     }
-    let aiResponse = "";
     let storeID = shopifyStoreID;
     if (process.env.NODE_ENV === "test") {
       storeID = "test-store-id";
     }
 
-    aiResponse = await descriptionModel.getProductDescription(
-      promptSettings,
+    const aiResponse = await descriptionModel.getAndStoreProductDescription(
+      promptSettings as IPromptSettings,
       storeID
     );
 
