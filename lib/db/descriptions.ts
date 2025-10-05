@@ -2,22 +2,25 @@ import { IPromptSettings } from "ai-product-description";
 import { db } from "./client.server";
 import productPredictionModel from "ai-product-description";
 import { Timestamp } from "firebase-admin/firestore";
+import { BaseModel } from ".";
+import { CreditsModel } from "./credits";
+import { UserModel } from "./user";
 
-export class DescriptionModel {
-  private descriptionCollection = db.collection("descriptions");
+interface IDescription {
+  shopifyStoreID: string;
+  text: string;
+  productID: string;
+}
 
-  public async create(shopifyStoreID: string, text: string, productID: string) {
-    return await this.descriptionCollection.add({
-      shopifyStoreID: shopifyStoreID,
-      text: text,
-      productID: productID,
-      datetime: Timestamp.fromDate(new Date()),
-    });
+export class DescriptionModel extends BaseModel {
+  protected collection = db.collection("descriptions");
+
+  public async create(data: IDescription) {
+    return await super.create(data);
   }
-
   public async verifyUserUsage(storeID: string) {
     try {
-      const descriptions = await this.getByStoreID(storeID);
+      const descriptions = await this.getAllByStoreID(storeID);
 
       // Start and end of today
       const now = new Date();
@@ -50,24 +53,20 @@ export class DescriptionModel {
     }
   }
 
-  public async getAllDescriptionsForProduct(productID: string) {
-    const query = await this.descriptionCollection
-      .where("productID", "==", productID)
-      .get();
-
-    return query.docs.map((doc) => ({
-      id: doc.id,
-      data: doc.data(),
-    }));
+  public async getAllByProduct(productID: string) {
+    try {
+      return await this.getByField("productID", productID);
+    } catch (error) {
+      throw error;
+    }
   }
-  public async getByStoreID(shopifyStoreID: string) {
-    const query = await this.descriptionCollection
-      .where("shopifyStoreID", "==", shopifyStoreID)
-      .get();
-    return query.docs.map((doc) => ({
-      id: doc.id,
-      data: doc.data(),
-    }));
+
+  public async getAllByStoreID(shopifyStoreID: string) {
+    try {
+      return await this.getByField("shopifyStoreID", shopifyStoreID);
+    } catch (error) {
+      throw error;
+    }
   }
 
   // Utility function to extract numeric ID from Shopify GID
@@ -88,15 +87,41 @@ export class DescriptionModel {
     storeID: string
   ) {
     try {
+      // Check if user account exists.
+      // if not create a new user account with free membership.
+      const userModel = new UserModel();
+      const user = await userModel.getByField("storeID", storeID);
+      if (!user.length) {
+        await userModel.create({
+          email: "unknown",
+          membership: "free",
+          storeID: storeID,
+        });
+      }
+      console.log(user, "user");
+
       // verify usage limits
       await this.verifyUserUsage(storeID);
 
+      const creditModel = new CreditsModel();
+      await creditModel.checkUserCreditsBeforeUsing(storeID);
       // get description from model.
       const description =
         await productPredictionModel.generateProductDescription(settings);
       const truncatedID = this.getNumericIdFromGid(settings.product.id);
+
+      await creditModel.create({
+        userID: storeID,
+        credits: -1,
+        transactionType: "used",
+      });
+
       // save description for user.
-      await this.create(storeID, description, truncatedID);
+      await this.create({
+        shopifyStoreID: storeID,
+        text: description,
+        productID: truncatedID,
+      });
 
       return description;
     } catch (error) {
