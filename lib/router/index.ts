@@ -1,12 +1,9 @@
 import { aiRouter } from "./ai_router";
+import { descriptionRouter } from "./descriptions_router";
 import { shopifyRouter } from "./shopify_router";
 
-/// CREATING PROTECTED ROUTES THAT WILL ATTEMPT TO FIND A USER WITHIN THE DB
-const protectedRoutes = {
-  ai: aiRouter,
-};
-
 export default {
-  ...protectedRoutes,
+  ai: aiRouter,
+  description: descriptionRouter,
   shopify: shopifyRouter,
 };

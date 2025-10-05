@@ -1,14 +1,17 @@
 import { IPromptSettings } from "ai-product-description";
 import { db } from "./client.server";
 import productPredictionModel from "ai-product-description";
+import { Timestamp } from "firebase-admin/firestore";
+
 export class DescriptionModel {
   private descriptionCollection = db.collection("descriptions");
+
   public async create(shopifyStoreID: string, text: string, productID: string) {
     return await this.descriptionCollection.add({
       shopifyStoreID: shopifyStoreID,
       text: text,
       productID: productID,
-      datetime: new Date(),
+      datetime: Timestamp.fromDate(new Date()),
     });
   }
 
@@ -47,6 +50,16 @@ export class DescriptionModel {
     }
   }
 
+  public async getAllDescriptionsForProduct(productID: string) {
+    const query = await this.descriptionCollection
+      .where("productID", "==", productID)
+      .get();
+
+    return query.docs.map((doc) => ({
+      id: doc.id,
+      data: doc.data(),
+    }));
+  }
   public async getByStoreID(shopifyStoreID: string) {
     const query = await this.descriptionCollection
       .where("shopifyStoreID", "==", shopifyStoreID)
@@ -55,6 +68,19 @@ export class DescriptionModel {
       id: doc.id,
       data: doc.data(),
     }));
+  }
+
+  // Utility function to extract numeric ID from Shopify GID
+  public getNumericIdFromGid(gid: string): string {
+    // Validate GID format (e.g., gid://shopify/Product/123)
+    const gidRegex = /^gid:\/\/shopify\/Product\/\d+$/;
+    if (!gidRegex.test(gid)) {
+      throw new Error(`Invalid Shopify GID: ${gid}`);
+    }
+
+    // Split GID by '/' and return the last segment (numeric ID)
+    const parts = gid.split("/");
+    return parts[parts.length - 1];
   }
 
   public async getAndStoreProductDescription(
@@ -68,8 +94,9 @@ export class DescriptionModel {
       // get description from model.
       const description =
         await productPredictionModel.generateProductDescription(settings);
+      const truncatedID = this.getNumericIdFromGid(settings.product.id);
       // save description for user.
-      await this.create(storeID, description, settings.product.id.toString());
+      await this.create(storeID, description, truncatedID);
 
       return description;
     } catch (error) {

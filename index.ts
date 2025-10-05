@@ -41,6 +41,7 @@ server.get("/api/v1/ping", (req, res, next) => {
 });
 
 router.ai.applyRoutes(server);
+router.description.applyRoutes(server);
 router.shopify.applyRoutes(server);
 
 const portNumber = process.env.PORT || 8100;
