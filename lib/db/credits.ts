@@ -41,7 +41,7 @@ export class CreditsModel extends BaseModel {
       const credits = await this.getByField("userID", userID);
       let totalCredits = 0;
       credits.forEach((credit: any) => {
-        totalCredits += credit.data.credits;
+        totalCredits += credit.credits;
       });
       return totalCredits;
     } catch (error) {

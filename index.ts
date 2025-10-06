@@ -44,6 +44,7 @@ router.ai.applyRoutes(server);
 router.description.applyRoutes(server);
 router.shopify.applyRoutes(server);
 router.auth.applyRoutes(server);
+router.payments.applyRoutes(server);
 
 const portNumber = process.env.PORT || 8100;
 server.listen(portNumber, function () {

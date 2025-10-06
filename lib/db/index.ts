@@ -5,15 +5,21 @@ export abstract class BaseModel {
   protected collection: FirebaseFirestore.CollectionReference;
 
   public async create(data) {
-    return await this.collection.add({
+    await this.collection.add({
       ...data,
       datetime: Timestamp.fromDate(new Date()),
     });
   }
+
+  public async createWithID(data, id: string) {
+    await this.collection.doc(id).set({
+      ...data,
+      datetime: Timestamp.fromDate(new Date()),
+    });
+  }
+
   public async getByField(field: string, value: any) {
     const query = await this.collection.where(field, "==", value).get();
-    return query.docs.map((doc) => ({
-      ...doc.data(),
-    }));
+    return query.docs.map((doc) => doc.data());
   }
 }

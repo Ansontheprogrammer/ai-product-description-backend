@@ -1,6 +1,4 @@
-import { IPromptSettings } from "ai-product-description";
 import { db } from "./client.server";
-import productPredictionModel from "ai-product-description";
 import { Timestamp } from "firebase-admin/firestore";
 import { BaseModel } from ".";
 import { CreditsModel } from "./credits";
@@ -25,9 +23,12 @@ export class UserModel extends BaseModel {
       createdAt: Timestamp.fromDate(new Date()),
     });
 
-    return await super.create({
-      ...data,
-    });
+    return await super.createWithID(
+      {
+        ...data,
+      },
+      data.storeID
+    );
   }
 
   public async update(storeID: string, data: any) {
@@ -79,5 +80,3 @@ export class UserModel extends BaseModel {
     }
   }
 }
-
-export const descriptionModel = new UserModel();

@@ -37,16 +37,16 @@ export class DescriptionModel extends BaseModel {
   }
 
   // Utility function to extract numeric ID from Shopify GID
-  public getNumericIdFromGid(gid: string): string {
-    // Validate GID format (e.g., gid://shopify/Product/123)
+  public getNumericIdFromGid(productID: string): string {
+    // If product has shopify gid, remove it from the product name.
     const gidRegex = /^gid:\/\/shopify\/Product\/\d+$/;
-    if (!gidRegex.test(gid)) {
-      throw new Error(`Invalid Shopify GID: ${gid}`);
+    if (gidRegex.test(productID)) {
+      // Split GID by '/' and return the last segment (numeric ID)
+      const parts = productID.split("/");
+      return parts[parts.length - 1];
+    } else {
+      return productID;
     }
-
-    // Split GID by '/' and return the last segment (numeric ID)
-    const parts = gid.split("/");
-    return parts[parts.length - 1];
   }
 
   public async getAndStoreProductDescription(
@@ -57,20 +57,18 @@ export class DescriptionModel extends BaseModel {
       // Check if user account exists.
       // if not create a new user account with free membership.
       const userModel = new UserModel();
-      const user = await userModel.getByField("storeID", storeID);
-      if (!user.length) {
+      const user = (await userModel.getByField("storeID", storeID))[0];
+      if (!user) {
         await userModel.create({
           email: "unknown",
           membership: "free",
           storeID: storeID,
         });
-      }
-
-      /// If user has already been created, verify before generating description
-      /// If token is invalid, this function will throw an error.
-      if (user.length > 0) {
+      } else {
+        /// If user has already been created, verify before generating description
+        /// If token is invalid, this function will throw an error.
         /// Add condition to check if user has signed in using google oauth
-        const token = user[0].data.access_token;
+        const token = user.access_token;
         if (token) {
           await verifyUserAccessToken(token);
         }

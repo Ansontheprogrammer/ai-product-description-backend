@@ -25,11 +25,9 @@ export async function authorizationCallback(req, res, next) {
     });
 
     const { access_token } = response.data;
-
     // Store tokens securely
     // Update your database with the tokens associated with the storeID
     const userModel = new UserModel();
-    console.log("about to store tokens for storeID:", storeID);
     await userModel.storeToken(storeID, access_token);
     console.log("Access Token:", access_token);
 
