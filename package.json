@@ -23,7 +23,7 @@
   },
   "license": "ISC",
   "dependencies": {
-    "ai-product-description": "^1.0.2",
+    "ai-product-description": "^1.0.5",
     "axios": "^0.21.1",
     "bunyan": "^1.8.15",
     "dotenv": "^16.4.5",
@@ -39,10 +39,10 @@
     "typescript": "^4.6.3"
   },
   "devDependencies": {
-    "@types/stripe": "^8.0.417",
     "@types/jest": "^30.0.0",
     "@types/restify": "^8.5.1",
     "@types/restify-errors": "^4.3.3",
+    "@types/stripe": "^8.0.417",
     "jest": "^30.2.0",
     "mocha": "^8.2.1",
     "nodemon": "^2.0.22",

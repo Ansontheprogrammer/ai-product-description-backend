@@ -5,10 +5,20 @@ export abstract class BaseModel {
   protected collection: FirebaseFirestore.CollectionReference;
 
   public async create(data) {
-    await this.collection.add({
+    const doc = await this.collection.add({
       ...data,
       datetime: Timestamp.fromDate(new Date()),
     });
+    await doc.set(
+      {
+        id: doc.id,
+      },
+      { merge: true }
+    );
+  }
+
+  public async delete(id: string) {
+    await this.collection.doc(id).delete();
   }
 
   public async createWithID(data, id: string) {

@@ -6,6 +6,7 @@ export async function authorize(req, res, next) {
   (req as any).storeID = req.params.storeID;
 
   const authUrl = `${process.env.OAUTH_PROVIDER_URL}?client_id=${process.env.CLIENT_ID}&state=${req.params.storeID}&redirect_uri=${process.env.REDIRECT_URI}&response_type=code&scope=email profile`;
+  console.log("Redirecting to auth URL:", authUrl);
   res.redirect(authUrl, next);
 }
 

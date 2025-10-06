@@ -34,7 +34,13 @@ server.use(cors.actual);
 server.use(restify.plugins.fullResponse());
 server.use(restify.plugins.bodyParser({ mapParams: true }));
 server.use(restify.plugins.queryParser({ mapParams: true }));
-
+server.use(
+  restify.plugins.throttle({
+    burst: 100, // allow up to 100 requests at once (burst)
+    rate: 0.027, // roughly 100 requests/hour (100 / 3600s = 0.027 req/s)
+    ip: true, // limit by IP address
+  })
+);
 // Routes
 server.get("/api/v1/ping", (req, res, next) => {
   res.send(200, "ping");
