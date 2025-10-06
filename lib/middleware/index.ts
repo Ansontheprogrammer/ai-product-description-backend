@@ -32,10 +32,6 @@ export async function verifyUser(req, res, next) {
     // 4. Attach user to request for use in controllers
     (req as any).user = user;
     (req as any).accessToken = token;
-
-    console.log("User verified:", user);
-
-    return next();
   } catch (error) {
     console.error("Error in verifyUser middleware:", error);
     return res.send(401, {

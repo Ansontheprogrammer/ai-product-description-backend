@@ -93,7 +93,6 @@ export async function confirmPayment(req, res, next) {
 
     // Retrieve payment intent from Stripe
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-
     if (paymentIntent.status !== "succeeded") {
       return res.send(400, {
         error: "Payment has not succeeded yet",
