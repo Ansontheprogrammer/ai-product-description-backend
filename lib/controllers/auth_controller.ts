@@ -4,7 +4,6 @@ import { UserModel } from "../db/user";
 // Step 1 — Redirect user to OAuth provider
 export async function authorize(req, res, next) {
   (req as any).storeID = req.params.storeID;
-  console.log(req.params.storeID, "storeID in auth route");
 
   const authUrl = `${process.env.OAUTH_PROVIDER_URL}?client_id=${process.env.CLIENT_ID}&state=${req.params.storeID}&redirect_uri=${process.env.REDIRECT_URI}&response_type=code&scope=email profile`;
   res.redirect(authUrl, next);

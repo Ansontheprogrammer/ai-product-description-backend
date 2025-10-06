@@ -5,7 +5,7 @@ interface ICredits {
   userID: string;
   credits: number;
   createdAt?: FirebaseFirestore.Timestamp;
-  transactionType: "free" | "paid" | "used";
+  transactionType: "free" | "paid" | "used" | "refund";
   stripePaymentID?: string;
 }
 

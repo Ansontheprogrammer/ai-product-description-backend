@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import { CreditsModel } from "../db/credits";
 import { UserModel } from "../db/user";
+import { PaymentsModel } from "../db/payments";
 import { Timestamp } from "firebase-admin/firestore";
 
 const env = process.env.NODE_ENV;
@@ -37,17 +38,21 @@ export async function createPaymentIntent(req, res, next) {
     // Verify user exists
     const userModel = new UserModel();
     const user = await userModel.getByField("storeID", storeID);
-    console.log(user, "user in createPaymentIntent");
     if (!user.length) {
       return res.send(404, {
         error: "User not found",
       });
     }
 
-    // Create payment intent
+    // Ensure Stripe customer exists for this user
+    const paymentsModel = new PaymentsModel();
+    const stripeCustomerID = await paymentsModel.ensureCustomer(storeID);
+
+    // Create payment intent with customer
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100), // Convert to cents
       currency,
+      customer: stripeCustomerID, // Associate with Stripe customer
       metadata: {
         storeID,
         creditAmount: creditAmount.toString(),
@@ -206,6 +211,167 @@ export async function getCreditHistory(req, res, next) {
     console.error("Error getting credit history:", error);
     return res.send(500, {
       error: "Failed to get credit history",
+    });
+  }
+}
+
+/**
+ * Process a refund for a payment
+ *
+ * Method: POST
+ * Endpoint: /api/v1/payments/refund
+ *
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @param {Function} next - The next middleware function
+ */
+export async function processRefund(req, res, next) {
+  try {
+    const { paymentIntentId, reason } = req.body;
+
+    // Validate required fields
+    if (!paymentIntentId) {
+      return res.send(400, {
+        error: "Payment intent ID is required",
+      });
+    }
+
+    // Use the PaymentsModel to process the refund
+    const paymentsModel = new PaymentsModel();
+    const refundResult = await paymentsModel.refundUser(paymentIntentId);
+
+    return res.json({
+      success: true,
+      message: "Refund processed successfully",
+      refundId: refundResult.refundId,
+      amountRefunded: refundResult.amountRefunded,
+      currency: refundResult.currency,
+      reason: reason || "requested_by_customer",
+    });
+  } catch (error) {
+    console.error("Error processing refund:", error);
+    return res.send(500, {
+      error: "Failed to process refund",
+    });
+  }
+}
+
+/**
+ * Get refund status for a payment
+ *
+ * Method: GET
+ * Endpoint: /api/v1/payments/refund/:paymentIntentId
+ *
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @param {Function} next - The next middleware function
+ */
+export async function getRefundStatus(req, res, next) {
+  try {
+    const { paymentIntentId } = req.params;
+
+    if (!paymentIntentId) {
+      return res.send(400, {
+        error: "Payment intent ID is required",
+      });
+    }
+
+    // Retrieve payment intent and its refunds from Stripe
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    if (!paymentIntent) {
+      return res.send(404, {
+        error: "Payment intent not found",
+      });
+    }
+
+    // Get refunds for this payment intent
+    const refunds = await stripe.refunds.list({
+      payment_intent: paymentIntentId,
+    });
+
+    return res.json({
+      paymentIntentId,
+      paymentStatus: paymentIntent.status,
+      totalAmount: paymentIntent.amount / 100,
+      currency: paymentIntent.currency,
+      refunds: refunds.data.map((refund) => ({
+        id: refund.id,
+        amount: refund.amount / 100,
+        currency: refund.currency,
+        status: refund.status,
+        reason: refund.reason,
+        created: new Date(refund.created * 1000),
+      })),
+      totalRefunded: refunds.data.reduce(
+        (sum, refund) => sum + refund.amount / 100,
+        0
+      ),
+      isFullyRefunded:
+        refunds.data.reduce((sum, refund) => sum + refund.amount, 0) >=
+        paymentIntent.amount,
+    });
+  } catch (error) {
+    console.error("Error getting refund status:", error);
+    return res.send(500, {
+      error: "Failed to get refund status",
+    });
+  }
+}
+
+/**
+ * Get payment history for a user (including refunds)
+ *
+ * Method: GET
+ * Endpoint: /api/v1/payments/history/:storeID
+ *
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @param {Function} next - The next middleware function
+ */
+export async function getPaymentHistory(req, res, next) {
+  try {
+    const { storeID } = req.params;
+
+    if (!storeID) {
+      return res.send(400, {
+        error: "Store ID is required",
+      });
+    }
+
+    // Get user to find their Stripe customer ID
+    const userModel = new UserModel();
+    const users = await userModel.getByField("storeID", storeID);
+
+    if (!users.length) {
+      return res.send(404, {
+        error: "User not found",
+      });
+    }
+
+    const user = users[0];
+
+    if (!user.stripeCustomerID) {
+      return res.json({
+        storeID,
+        payments: [],
+        message: "No payment history found",
+      });
+    }
+
+    // Use PaymentsModel to get payment history
+    const paymentsModel = new PaymentsModel();
+    const payments = await paymentsModel.getUserPayments(user.stripeCustomerID);
+
+    return res.json({
+      storeID,
+      stripeCustomerID: user.stripeCustomerID,
+      payments,
+    });
+  } catch (error) {
+    console.error("Error getting payment history:", error);
+    return res.send(500, {
+      error: "Failed to get payment history",
     });
   }
 }

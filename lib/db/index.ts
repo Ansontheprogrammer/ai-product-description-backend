@@ -18,7 +18,10 @@ export abstract class BaseModel {
     });
   }
 
-  public async getByField(field: string, value: any) {
+  public async getByField(
+    field: string,
+    value: any
+  ): Promise<Record<string, any>[]> {
     const query = await this.collection.where(field, "==", value).get();
     return query.docs.map((doc) => doc.data());
   }
