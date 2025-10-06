@@ -13,8 +13,7 @@ export abstract class BaseModel {
   public async getByField(field: string, value: any) {
     const query = await this.collection.where(field, "==", value).get();
     return query.docs.map((doc) => ({
-      id: doc.id,
-      data: doc.data(),
+      ...doc.data(),
     }));
   }
 }

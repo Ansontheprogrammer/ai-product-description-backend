@@ -5,7 +5,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { BaseModel } from ".";
 import { CreditsModel } from "./credits";
 
-interface IUser {
+export interface IUser {
   membership: "free" | "premium";
   email: string;
   storeID: string;
@@ -24,9 +24,43 @@ export class UserModel extends BaseModel {
       transactionType: "free",
       createdAt: Timestamp.fromDate(new Date()),
     });
-    console.log(data, "data");
 
-    return await super.create(data);
+    return await super.create({
+      ...data,
+    });
+  }
+
+  public async update(storeID: string, data: any) {
+    try {
+      const storesRef = db.collection("user");
+      const snapshot = await storesRef.where("storeID", "==", storeID).get();
+
+      if (snapshot.empty) {
+        throw new Error(`No store found with storeID: ${storeID}`);
+      }
+
+      // Assuming storeID is unique, update the first match
+      const docRef = snapshot.docs[0].ref;
+      console.log(data, "data to update store");
+
+      await docRef.update(data);
+      console.log("Store updated successfully", data);
+
+      return { id: docRef.id, ...data };
+    } catch (error) {
+      console.error("Error updating store:", error);
+      throw error;
+    }
+  }
+
+  public async storeToken(storeID: string, access_token: string) {
+    try {
+      await this.update(storeID, {
+        access_token,
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 
   public async changeMembership(

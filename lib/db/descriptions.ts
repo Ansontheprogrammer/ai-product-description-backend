@@ -5,6 +5,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { BaseModel } from ".";
 import { CreditsModel } from "./credits";
 import { UserModel } from "./user";
+import { verifyUserAccessToken } from "../middleware";
 
 interface IDescription {
   shopifyStoreID: string;
@@ -17,40 +18,6 @@ export class DescriptionModel extends BaseModel {
 
   public async create(data: IDescription) {
     return await super.create(data);
-  }
-  public async verifyUserUsage(storeID: string) {
-    try {
-      const descriptions = await this.getAllByStoreID(storeID);
-
-      // Start and end of today
-      const now = new Date();
-      const startOfDay = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate()
-      );
-      const endOfDay = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1
-      );
-
-      // Filter only descriptions created today
-      const todaysDescriptions = descriptions.filter((desc: any) => {
-        const created = desc.datetime;
-
-        return created >= startOfDay && created < endOfDay;
-      });
-
-      /// Limit the user to only 10 descriptions currently.
-      if (todaysDescriptions.length >= 10) {
-        throw new Error("USAGE_LIMIT_REACHED");
-      }
-
-      return true;
-    } catch (error) {
-      throw error;
-    }
   }
 
   public async getAllByProduct(productID: string) {
@@ -98,10 +65,16 @@ export class DescriptionModel extends BaseModel {
           storeID: storeID,
         });
       }
-      console.log(user, "user");
 
-      // verify usage limits
-      await this.verifyUserUsage(storeID);
+      /// If user has already been created, verify before generating description
+      /// If token is invalid, this function will throw an error.
+      if (user.length > 0) {
+        /// Add condition to check if user has signed in using google oauth
+        const token = user[0].data.access_token;
+        if (token) {
+          await verifyUserAccessToken(token);
+        }
+      }
 
       const creditModel = new CreditsModel();
       await creditModel.checkUserCreditsBeforeUsing(storeID);

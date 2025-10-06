@@ -1,5 +1,6 @@
 import { Router } from "restify-router";
 import { getAllDescriptionsForProduct } from "../controllers/descriptions_controller";
+import { verifyUser } from "../middleware";
 
 export const descriptionRouter = new Router();
 

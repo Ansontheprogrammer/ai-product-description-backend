@@ -1,7 +1,4 @@
-import { IPromptSettings } from "ai-product-description";
 import { db } from "./client.server";
-import productPredictionModel from "ai-product-description";
-import { Timestamp } from "firebase-admin/firestore";
 import { BaseModel } from ".";
 
 interface ICredits {
