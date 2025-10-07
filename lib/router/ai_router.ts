@@ -1,5 +1,5 @@
 import { Router } from "restify-router";
-import { getAIPromptResponse } from "../controllers/ai_controller";
+import { getProductDescription } from "../controllers/ai_controller";
 
 export const aiRouter = new Router();
 
@@ -8,4 +8,4 @@ export const aiRouter = new Router();
  *
  * Use the AI to generate ideas
  */
-aiRouter.post("/api/v1/ai/prompt", getAIPromptResponse);
+aiRouter.post("/api/v1/ai/prompt", getProductDescription);
