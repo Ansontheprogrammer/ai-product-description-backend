@@ -111,20 +111,22 @@ export class PaymentsModel extends BaseModel {
    * Fetch a user’s Stripe payment history (directly from Stripe)
    */
   public async getUserPayments(stripeCustomerID: string) {
-    const paymentIntents = await stripe.paymentIntents.list({
-      customer: stripeCustomerID,
-      limit: 20,
-    });
+    try {
+      const paymentIntents = await stripe.paymentIntents.list({
+        customer: stripeCustomerID,
+        limit: 20,
+      });
 
-    return paymentIntents.data.map((intent) => ({
-      id: intent.id,
-      amount: intent.amount / 100,
-      currency: intent.currency,
-      status: intent.status,
-      created: new Date(intent.created * 1000),
-      metadata: intent.metadata,
-    }));
+      return paymentIntents.data.map((intent) => ({
+        id: intent.id,
+        amount: intent.amount / 100,
+        currency: intent.currency,
+        status: intent.status,
+        created: new Date(intent.created * 1000),
+        metadata: intent.metadata,
+      }));
+    } catch (error) {
+      throw error;
+    }
   }
 }
-
-export const paymentsModel = new PaymentsModel();

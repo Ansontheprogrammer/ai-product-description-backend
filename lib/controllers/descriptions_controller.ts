@@ -1,4 +1,4 @@
-import { descriptionModel } from "../db/descriptions";
+import { DescriptionModel } from "../db/descriptions";
 
 /**
  * Get an AI response to a given prompt or question.
@@ -13,6 +13,7 @@ import { descriptionModel } from "../db/descriptions";
 export async function getAllDescriptionsForProduct(req, res, next) {
   const { productID } = req.params;
   try {
+    const descriptionModel = new DescriptionModel();
     const allDescriptionsForProduct = await descriptionModel.findAllByField(
       productID,
       "productID"

@@ -11,7 +11,7 @@ export interface IUser {
 }
 
 export class UserModel extends BaseModel {
-  protected collection = db.collection("user");
+  protected collection = db.collection("users");
 
   public async create(data: IUser) {
     /// give user 10 free credits
@@ -33,8 +33,9 @@ export class UserModel extends BaseModel {
 
   public async update(storeID: string, data: any) {
     try {
-      const storesRef = db.collection("user");
-      const snapshot = await storesRef.where("storeID", "==", storeID).get();
+      const snapshot = await this.collection
+        .where("storeID", "==", storeID)
+        .get();
 
       if (snapshot.empty) {
         throw new Error(`No store found with storeID: ${storeID}`);

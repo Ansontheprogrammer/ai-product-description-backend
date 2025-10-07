@@ -1,16 +1,16 @@
 import { IPromptSettings } from "ai-product-description";
 import { db } from "./client.server";
 import productPredictionModel from "ai-product-description";
-import { Timestamp } from "firebase-admin/firestore";
 import { BaseModel } from ".";
 import { CreditsModel } from "./credits";
 import { UserModel } from "./user";
 import { verifyUserAccessToken } from "../middleware";
 
-interface IDescription {
+export interface IDescription {
   shopifyStoreID: string;
   text: string;
   productID: string;
+  createdAt?: FirebaseFirestore.Timestamp;
 }
 
 export class DescriptionModel extends BaseModel {
@@ -85,5 +85,3 @@ export class DescriptionModel extends BaseModel {
     }
   }
 }
-
-export const descriptionModel = new DescriptionModel();

@@ -1,5 +1,5 @@
 import { IPromptSettings } from "ai-product-description";
-import { descriptionModel } from "../db/descriptions";
+import { DescriptionModel } from "../db/descriptions";
 
 /**
  * Get an AI response to a given prompt or question.
@@ -11,7 +11,7 @@ import { descriptionModel } from "../db/descriptions";
  * @param {Object} res - The response object.
  * @param {Function} next - The next middleware function.
  */
-export async function getAIPromptResponse(req, res, next) {
+export async function getProductDescription(req, res, next) {
   const { shopifyStoreID, promptSettings } = req.body;
   try {
     /// Shopify app sends form data that needs parsing
@@ -23,12 +23,14 @@ export async function getAIPromptResponse(req, res, next) {
       storeID = "test-store-id";
     }
 
-    const aiResponse = await descriptionModel.getAndStoreProductDescription(
-      promptSettings as IPromptSettings,
-      storeID
-    );
+    const descriptionModel = new DescriptionModel();
+    const productDescription =
+      await descriptionModel.getAndStoreProductDescription(
+        promptSettings as IPromptSettings,
+        storeID
+      );
 
-    return res.json(aiResponse);
+    return res.json(productDescription);
   } catch (err) {
     const error = err as Error;
     if (error.message === "USAGE_LIMIT_REACHED") {

@@ -1,7 +1,7 @@
 import { db } from "./client.server";
 import { BaseModel } from ".";
 
-interface ICredits {
+export interface ICredits {
   userID: string;
   credits: number;
   createdAt?: FirebaseFirestore.Timestamp;
@@ -49,5 +49,3 @@ export class CreditsModel extends BaseModel {
     }
   }
 }
-
-export const descriptionModel = new CreditsModel();
