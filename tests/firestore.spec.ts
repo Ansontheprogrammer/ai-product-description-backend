@@ -3,11 +3,12 @@ import { CreditsModel, ICredits } from "../lib/db/credits";
 import { DescriptionModel, IDescription } from "../lib/db/descriptions";
 import { IUser, UserModel } from "../lib/db/user";
 
+const testStoreID = "test-store-id";
 describe("Firestore", () => {
   beforeAll(async () => {
     try {
       const testDescription: IDescription = {
-        shopifyStoreID: "test-store-id",
+        shopifyStoreID: testStoreID,
         text: "test-description",
         productID: "test-product-id",
       };
@@ -17,13 +18,13 @@ describe("Firestore", () => {
       const testUser: IUser = {
         membership: "free",
         email: "test-email",
-        storeID: "test-store-id",
+        storeID: testStoreID,
       };
       const userModel = new UserModel();
       await userModel.create(testUser);
 
       const testCredit: ICredits = {
-        userID: "test-store-id",
+        userID: testStoreID,
         credits: 10,
         transactionType: "free",
       };
@@ -66,21 +67,21 @@ describe("Firestore", () => {
     const descriptionModel = new DescriptionModel();
     const description = await descriptionModel.findOneByField(
       "shopifyStoreID",
-      "test-store-id"
+      testStoreID
     );
-    expect(description.shopifyStoreID).toBe("test-store-id");
+    expect(description.shopifyStoreID).toBe(testStoreID);
   });
   it("should find all documents by field", async () => {
     const descriptionModel = new DescriptionModel();
     /// add one more document to the collection.
     await descriptionModel.create({
-      shopifyStoreID: "test-store-id",
+      shopifyStoreID: testStoreID,
       text: "test-description",
       productID: "test-product-id",
     });
     const descriptions = await descriptionModel.findAllByField(
       "shopifyStoreID",
-      "test-store-id"
+      testStoreID
     );
     expect(descriptions.length).toBeGreaterThan(1);
   });
