@@ -13,8 +13,9 @@ import { descriptionModel } from "../db/descriptions";
 export async function getAllDescriptionsForProduct(req, res, next) {
   const { productID } = req.params;
   try {
-    const allDescriptionsForProduct = await descriptionModel.getAllByProduct(
-      productID
+    const allDescriptionsForProduct = await descriptionModel.findAllByField(
+      productID,
+      "productID"
     );
 
     return res.json(allDescriptionsForProduct);

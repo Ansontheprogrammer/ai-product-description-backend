@@ -37,8 +37,8 @@ export async function createPaymentIntent(req, res, next) {
 
     // Verify user exists
     const userModel = new UserModel();
-    const user = await userModel.getByField("storeID", storeID);
-    if (!user.length) {
+    const user = await userModel.findOneByField("storeID", storeID);
+    if (!user) {
       return res.send(404, {
         error: "User not found",
       });
@@ -196,7 +196,7 @@ export async function getCreditHistory(req, res, next) {
     }
 
     const creditsModel = new CreditsModel();
-    const creditHistory = await creditsModel.getByField("userID", storeID);
+    const creditHistory = await creditsModel.findAllByField("userID", storeID);
 
     return res.json({
       storeID,
@@ -341,15 +341,13 @@ export async function getPaymentHistory(req, res, next) {
 
     // Get user to find their Stripe customer ID
     const userModel = new UserModel();
-    const users = await userModel.getByField("storeID", storeID);
+    const user = await userModel.findOneByField("storeID", storeID);
 
-    if (!users.length) {
+    if (!user.length) {
       return res.send(404, {
         error: "User not found",
       });
     }
-
-    const user = users[0];
 
     if (!user.stripeCustomerID) {
       return res.json({

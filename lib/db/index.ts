@@ -1,5 +1,4 @@
 import { Timestamp } from "firebase-admin/firestore";
-import { db } from "./client.server";
 
 export abstract class BaseModel {
   protected collection: FirebaseFirestore.CollectionReference;
@@ -28,11 +27,19 @@ export abstract class BaseModel {
     });
   }
 
-  public async getByField(
+  public async findAllByField(
     field: string,
     value: any
   ): Promise<Record<string, any>[]> {
     const query = await this.collection.where(field, "==", value).get();
     return query.docs.map((doc) => doc.data());
+  }
+
+  public async findOneByField(
+    field: string,
+    value: any
+  ): Promise<Record<string, any>> {
+    const query = await this.collection.where(field, "==", value).get();
+    return query.docs.map((doc) => doc.data())[0];
   }
 }

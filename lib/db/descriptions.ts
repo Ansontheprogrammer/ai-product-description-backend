@@ -20,22 +20,6 @@ export class DescriptionModel extends BaseModel {
     return await super.create(data);
   }
 
-  public async getAllByProduct(productID: string) {
-    try {
-      return await this.getByField("productID", productID);
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  public async getAllByStoreID(shopifyStoreID: string) {
-    try {
-      return await this.getByField("shopifyStoreID", shopifyStoreID);
-    } catch (error) {
-      throw error;
-    }
-  }
-
   // Utility function to extract numeric ID from Shopify GID
   public getNumericIdFromGid(productID: string): string {
     // If product has shopify gid, remove it from the product name.
@@ -57,7 +41,7 @@ export class DescriptionModel extends BaseModel {
       // Check if user account exists.
       // if not create a new user account with free membership.
       const userModel = new UserModel();
-      const user = (await userModel.getByField("storeID", storeID))[0];
+      const user = await userModel.findOneByField("storeID", storeID);
       if (!user) {
         await userModel.create({
           email: "unknown",

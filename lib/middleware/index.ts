@@ -44,15 +44,10 @@ export async function verifyUserAccessToken(token: string) {
   try {
     // Find user in database by access token
     const userModel = new UserModel();
-    const users = await userModel.getByField("access_token", token);
+    const user = await userModel.findOneByField("access_token", token);
 
-    if (!users || users.length === 0) {
+    if (!user) {
       throw new Error("User not found or invalid token");
-    }
-
-    // Check if we found multiple users with the same token (shouldn't happen)
-    if (users.length > 1) {
-      console.warn("Multiple users found with the same access token");
     }
 
     // Optionally verify the token with your OAuth provider
@@ -80,7 +75,7 @@ export async function verifyUserAccessToken(token: string) {
       }
     }
 
-    return users[0]; // Return the user data
+    return user; // Return the user data
   } catch (error) {
     console.error("Error verifying access token:", error);
     throw error;

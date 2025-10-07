@@ -29,9 +29,9 @@ export async function handleCustomerDataRequest(req, res, next) {
 
     // Find user data by shop domain
     const userModel = new UserModel();
-    const users = await userModel.getByField("storeID", storeID);
+    const user = await userModel.findOneByField("storeID", storeID);
 
-    if (!users.length) {
+    if (!user) {
       // No data found for this shop
       return res.json({
         message: "No customer data found for this shop",
@@ -39,8 +39,6 @@ export async function handleCustomerDataRequest(req, res, next) {
         data: null,
       });
     }
-
-    const user = users[0];
 
     // Collect all customer data we have stored
     const customerData = {
@@ -61,7 +59,7 @@ export async function handleCustomerDataRequest(req, res, next) {
     try {
       const creditsModel = new CreditsModel();
       const credits = await creditsModel.getCurrentCredits(user.storeID);
-      const creditHistory = await creditsModel.getByField(
+      const creditHistory = await creditsModel.findAllByField(
         "userID",
         user.storeID
       );
@@ -135,10 +133,9 @@ export async function handleShopRedact(req, res, next) {
     const storeID = req.user.storeID;
     // Find user data by shop domain
     const userModel = new UserModel();
-    const users = await userModel.getByField("storeID", storeID);
-    console.log("users", users, storeID);
+    const user = await userModel.findOneByField("storeID", storeID);
 
-    if (!users.length) {
+    if (!user) {
       // No data found for this shop
       return res.json({
         message: "No customer data found to redact",
@@ -146,8 +143,6 @@ export async function handleShopRedact(req, res, next) {
         redacted: false,
       });
     }
-
-    const user = users[0];
 
     // Redact/anonymize customer data
     const redactedData = {
@@ -198,9 +193,9 @@ export async function handleShopDelete(req, res, next) {
 
     // Find user data by shop domain
     const userModel = new UserModel();
-    const users = await userModel.getByField("storeID", shop_domain);
+    const user = await userModel.findOneByField("storeID", shop_domain);
 
-    if (!users.length) {
+    if (!user) {
       // No data found for this shop
       return res.json({
         message: "No shop data found to delete",
@@ -209,7 +204,6 @@ export async function handleShopDelete(req, res, next) {
       });
     }
 
-    const user = users[0];
     const deletionResults = {
       user_deleted: false,
       credits_deleted: false,
@@ -228,7 +222,7 @@ export async function handleShopDelete(req, res, next) {
     // Delete credits data
     try {
       const creditsModel = new CreditsModel();
-      const creditTransactions = await creditsModel.getByField(
+      const creditTransactions = await creditsModel.findAllByField(
         "userID",
         user.storeID
       );
@@ -244,7 +238,7 @@ export async function handleShopDelete(req, res, next) {
     // Delete description data
     try {
       const descriptionModel = new DescriptionModel();
-      const descriptions = await descriptionModel.getByField(
+      const descriptions = await descriptionModel.findAllByField(
         "shopifyStoreID",
         user.storeID
       );

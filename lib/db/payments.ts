@@ -31,16 +31,14 @@ export class PaymentsModel extends BaseModel {
   public async ensureCustomer(storeID: string, email?: string) {
     try {
       const userModel = new UserModel();
-      const user = await userModel.getByField("storeID", storeID);
+      const user = await userModel.findOneByField("storeID", storeID);
 
-      if (!user.length) {
+      if (!user) {
         throw new Error("User not found");
       }
 
-      const userData = user[0];
-
-      if (userData.stripeCustomerID) {
-        return userData.stripeCustomerID;
+      if (user.stripeCustomerID) {
+        return user.stripeCustomerID;
       }
 
       /// Create user a temporary email variable if no email is provided

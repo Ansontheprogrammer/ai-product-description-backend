@@ -38,7 +38,7 @@ export class CreditsModel extends BaseModel {
 
   public async getCurrentCredits(userID: string) {
     try {
-      const credits = await this.getByField("userID", userID);
+      const credits = await this.findAllByField("userID", userID);
       let totalCredits = 0;
       credits.forEach((credit: any) => {
         totalCredits += credit.credits;
